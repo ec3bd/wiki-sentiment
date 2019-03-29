@@ -5,7 +5,8 @@ import requests
 import json
 import sys
 import wikipedia
-
+from stanfordcorenlp import StanfordCoreNLP
+import subprocess
 
 
 
@@ -16,6 +17,7 @@ def main():
 	if len(sys.argv) > 1:
 		for arg in sys.argv[1:]:
 			article = fetch_article(arg)
+			stanford_corenlp(article)
 			translated = translate(article)
 			# sentiments = stanford_corenlp(translated)
 			# print(arg)
@@ -76,7 +78,7 @@ def translate(article):
 			wikipedia.set_lang(lang)
 			page = wikipedia.page(languages[lang]['title'])
 			content = page.content
-
+			#print(content)
 			data = {"q":content,
 					"target":"en",
 					"source":lang,
@@ -85,8 +87,16 @@ def translate(article):
 			#req = requests.post("https://translation.googleapis.com", data=data)
 
 
+def stanford_corenlp(article):
+	nlp = StanfordCoreNLP('corenlp/', lang='en')
 
+	for title in article:
+		with open("input.txt",'w') as infile:
+			infile.write(article[title])
 
+		#command = ["java", "-cp", "\"*\"", "edu.stanford.nlp.pipeline.Stanfo"]
+		article['pos'] = nlp.pos_tag(article[title])
 
+	print (article)
 if __name__ == '__main__':
 	main()

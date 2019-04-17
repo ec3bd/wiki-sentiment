@@ -7,3 +7,4 @@ Barack Obama, https://en.wikipedia.org/wiki/Barack_Obama
 World War II, https://en.wikipedia.org/wiki/World_War_II
 Allies of World War II, https://en.wikipedia.org/wiki/Allies_of_World_War_II
 Attack on Pearl Harbor, https://en.wikipedia.org/wiki/Attack_on_Pearl_Harbor
+Nazi Germany, https://en.wikipedia.org/wiki/Nazi_Germany

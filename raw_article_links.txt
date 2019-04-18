@@ -1,0 +1,10 @@
+Franklin D. Roosevelt, https://en.wikipedia.org/wiki/Franklin_D._Roosevelt
+Donald Trump, https://en.wikipedia.org/wiki/Donald_Trump
+NATO, https://en.wikipedia.org/wiki/NATO
+Barack Obama, https://en.wikipedia.org/wiki/Barack_Obama
+World War II, https://en.wikipedia.org/wiki/World_War_II
+Allies of World War II, https://en.wikipedia.org/wiki/Allies_of_World_War_II
+Attack on Pearl Harbor, https://en.wikipedia.org/wiki/Attack_on_Pearl_Harbor
+Nazi Germany, https://en.wikipedia.org/wiki/Nazi_Germany
+Adolf Hitler, https://en.wikipedia.org/wiki/Adolf_Hitler
+Axis powers, https://en.wikipedia.org/wiki/Axis_powers

@@ -6,6 +6,7 @@ import sys
 import wikipedia
 from stanfordcorenlp import StanfordCoreNLP
 import subprocess
+import json
 
 languagelist = ['en', 'zh', 'es', 'de', 'ru', 'ja']
 
@@ -16,8 +17,13 @@ def main():
 	if len(sys.argv) > 1:
 		for arg in sys.argv[1:]:
 			article = fetch_article(arg)
-			print(article)
+			
 			# stanford_corenlp(article)
+	
+			perform_ne(article)
+			for lang in article:
+				print(lang)
+				print(article[lang]['ner'])
 			# translated = translate(article)
 			# sentiments = stanford_corenlp(translated)
 			# print(arg)
@@ -31,6 +37,24 @@ def show_named_entities():
 	with open('prospectiveTopics.txt', 'r') as topics:
 		for line in topics:
 			fetch_article(line)
+
+def perform_ne(article):
+	for lang in article:
+		ne_freqs = {}
+		with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
+			sentences = article[lang]['content'].split(". ")
+			for sentence in sentences:
+				try:
+					entities = nlp.ner(sentence)
+					for entity in entities:
+						try:
+							ne_freqs[entity] += 1
+						except KeyError:
+							ne_freqs[entity] = 1
+				except json.decoder.JSONDecoderError:
+					print("error on \"" + sentence + "\"")
+
+		article[lang]['ner'] = sorted(ne_freqs.items(), reverse=True, key=lambda w: w[1])
 
 
 
@@ -55,7 +79,7 @@ def fetch_article(link):
 
 	print("Num characters in article: "+ str(len(content)))
 
-	retdict = {'en': content}
+	retdict = {'en': {'title' : title, 'content' : content}}
 
 	#get languages this article is in
 	param_dict = {"action":"query",
@@ -68,21 +92,48 @@ def fetch_article(link):
 	# print(results)
 	# print(req.url)
 
+
+	#retrieve foriegn language versions and put them in the dictionary
 	for pageid, info in results['query']['pages'].items():
+		print(info)
 		for lang in info['langlinks']:
 			print(lang)
 			if lang['lang'] in languagelist: #only get chinese, german, spanish
 				wikipedia.set_lang(lang['lang'])
 				page = wikipedia.page(lang['*'])
 				content = page.content
-				retdict[lang['lang']] = content
+				retdict[lang['lang']] = {'title': lang['*'], 'content': content}
+
+	#clean the article text, take out headers and newlines
+	for lang in retdict:
+		content = retdict[lang]['content']
+		ind = 0
+
+
+		while(True):
+			first = content.find("===")
+			if first == -1:
+				break
+			pair = content.find("===", first+1)
+			content = content[:first] + content[pair+3:]
+		while(True):
+			first = content.find("==")
+			if first == -1:
+				break
+			pair = content.find("==", first+1)
+			content = content[:first] + content[pair+2:]
+
+
+		content = content.replace("\n", "")
+
+		retdict[lang]['content'] == content
+
 
 	return retdict
 
 #input: dictionary with {'en:english article text as string, 'zh': chinese article text} etc etc
 #output: dictionary with keys being various two-letter language codes and items being the translated article text
 def translate(article):
-
 	#get translated articles
 	for lang in article:
 		wikipedia.set_lang(lang)
@@ -98,15 +149,11 @@ def translate(article):
 
 
 def stanford_corenlp(article):
-	nlp = StanfordCoreNLP('corenlp/', lang='en')
+	for lang in article:
+		with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
+			print(article[lang]['content'])
+			article[lang]['ner'] = nlp.ner(article[lang]['content'])
 
-	for title in article:
-		with open("input.txt",'w') as infile:
-			infile.write(article[title])
-
-		#command = ["java", "-cp", "\"*\"", "edu.stanford.nlp.pipeline.Stanfo"]
-		article['pos'] = nlp.pos_tag(article[title])
-
-	print (article)
+	
 if __name__ == '__main__':
 	main()

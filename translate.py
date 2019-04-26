@@ -8,7 +8,7 @@ from stanfordcorenlp import StanfordCoreNLP
 import subprocess
 import json
 
-languagelist = ['en', 'zh', 'es', 'de', 'ru', 'ja']
+languagelist = ['en', 'zh', 'es', 'de' ] #'ru', 'ja'  hold off on these til we have integrated support for other models
 
 
 def main():
@@ -39,6 +39,8 @@ def show_named_entities():
 			fetch_article(line)
 
 def perform_ne(article):
+	desired_classes = ['PERSON', 'LOCATION', 'ORGANIZATION', 'CITY', 'STATE_OR_PROVINCE', 'COUNTRY', 'NATIONALITY', 'RELIGION', 'IDEOLOGY']
+
 	for lang in article:
 		ne_freqs = {}
 		with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
@@ -47,10 +49,11 @@ def perform_ne(article):
 				try:
 					entities = nlp.ner(sentence)
 					for entity in entities:
-						try:
-							ne_freqs[entity] += 1
-						except KeyError:
-							ne_freqs[entity] = 1
+						if entity[1] in desired_classes:
+							try:
+								ne_freqs[entity] += 1
+							except KeyError:
+								ne_freqs[entity] = 1
 				except json.decoder.JSONDecoderError:
 					print("error on \"" + sentence + "\"")
 
@@ -67,7 +70,6 @@ def fetch_article(link):
 	print(title)
 	page = wikipedia.page(title)
 	content = page.content
-	print(len(content))
 	#Divide at earliest point to cut down on unnecessary characters
 	try:
 		content = content[:content.index("== See also ==")]
@@ -86,6 +88,7 @@ def fetch_article(link):
 					"prop":"langlinks",
 					"format":"json",
 					"redirects":1,
+					'lllimit': 30,
 					"titles":title}
 	req = requests.get("https://en.wikipedia.org/w/api.php", params=param_dict)
 	results = req.json()

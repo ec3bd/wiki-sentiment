@@ -7,9 +7,9 @@ import wikipedia
 from stanfordcorenlp import StanfordCoreNLP
 from googletrans import Translator
 import subprocess
-import json
 
 languagelist = ['en', 'zh', 'es', 'de' ] #'ru', 'ja'  hold off on these til we have integrated support for other models
+# nlp = StanfordCoreNLP('http://localhost', port=7000)
 
 
 def main():
@@ -45,26 +45,30 @@ def perform_ne(article):
 
 	for lang in article:
 		ne_freqs = {}
-		if lang == 'zh':
-			with StanfordCoreNLP('/Users/xiangezhang/corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
-				sentences = article[lang]['content'].split("。")
-		else:
-			with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
-				sentences = article[lang]['content'].split(". ")
-		for sentence in sentences:
-			try:
-				entities = nlp.ner(sentence)
-				for entity in entities:
-					if entity[1] in desired_classes:
-						try:
-							ne_freqs[entity] += 1
-						except KeyError:
-							ne_freqs[entity] = 1
-			except json.decode.JSONDecodeError as e:
-				print("error on \"" + sentence + "\"")
-				print(e)
+		# if lang != 'zh':
+		# 	continue
 
-		article[lang]['ner'] = sorted(ne_freqs.items(), reverse=True, key=lambda w: w[1])
+		with StanfordCoreNLP('/Users/xiangezhang/corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
+			if lang == 'zh':
+				sentences = article[lang]['content'].split("。")
+			else:
+				sentences = article[lang]['content'].split(". ")
+			for sentence in sentences:
+				try:
+					# print(sentence)
+					entities = nlp.ner(sentence)
+					for entity in entities:
+						if entity[1] in desired_classes:
+							try:
+								ne_freqs[entity] += 1
+							except KeyError:
+								ne_freqs[entity] = 1
+				except ValueError:
+					print("error on \"" + sentence + "\"")
+			# except json.decode.JSONDecodeError as e:
+			# 	print("error on \"" + sentence + "\"")
+			# 	print(e)
+			article[lang]['ner'] = sorted(ne_freqs.items(), reverse=True, key=lambda w: w[1])
 
 
 def sentiment(article):
@@ -93,7 +97,7 @@ def sentiment(article):
 				translated.append((selected[i][0], translations[i].text))
 
 			#analyze sentiment
-			with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang='en', memory='8g') as nlp:
+			with StanfordCoreNLP('/Users/xiangezhang/corenlp/stanford-corenlp-full-2018-10-05', lang='en', memory='8g') as nlp:
 				for sentence in translated:
 					results = nlp.sentiment(sentence[1])
 					print(sentence)
@@ -114,7 +118,7 @@ def sentiment(article):
 			sentiment_agg = {}
 			print(len(english_text))
 			print(len(eng_selected))
-			with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
+			with StanfordCoreNLP('/Users/xiangezhang/corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
 				for sentence in eng_selected:
 					results = nlp.sentiment(sentence[1])
 					print(sentence)

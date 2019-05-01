@@ -13,17 +13,17 @@ languagelist = ['en', 'zh', 'es', 'de' ] #'ru', 'ja'  hold off on these til we h
 
 def main():
 	#Goes through space ddelimited list of full article links and puts them through the pipeline.
-	#if using a dataset of articles, 
+	#if using a dataset of articles,
 	if len(sys.argv) > 1:
 		for arg in sys.argv[1:]:
 			article = fetch_article(arg)
-			
+
 			# stanford_corenlp(article)
-	
+
 			perform_ne(article)
-			for lang in article:
-				print(lang)
-				print(article[lang]['ner'])
+			# for lang in article:
+			# 	print(lang)
+			print(article['zh']['ner'])
 			# translated = translate(article)
 			# sentiments = stanford_corenlp(translated)
 			# print(arg)
@@ -43,7 +43,8 @@ def perform_ne(article):
 
 	for lang in article:
 		ne_freqs = {}
-		with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
+		if lang != 'zh': continue
+		with StanfordCoreNLP('/Users/xiangezhang/corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
 			sentences = article[lang]['content'].split(". ")
 			for sentence in sentences:
 				try:
@@ -62,7 +63,7 @@ def perform_ne(article):
 
 
 
-#given a link to a wikipedia article, 
+#given a link to a wikipedia article,
 #will return the text content of that article in a dictionary keyed by its page title
 def fetch_article(link):
 	ind = link.index("/wiki/")
@@ -88,7 +89,7 @@ def fetch_article(link):
 					"prop":"langlinks",
 					"format":"json",
 					"redirects":1,
-					'lllimit': 30,
+					'lllimit': 200,
 					"titles":title}
 	req = requests.get("https://en.wikipedia.org/w/api.php", params=param_dict)
 	results = req.json()
@@ -153,10 +154,10 @@ def translate(article):
 
 def stanford_corenlp(article):
 	for lang in article:
-		with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
+		with StanfordCoreNLP('corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
 			print(article[lang]['content'])
 			article[lang]['ner'] = nlp.ner(article[lang]['content'])
 
-	
+
 if __name__ == '__main__':
 	main()

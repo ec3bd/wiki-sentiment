@@ -7,9 +7,9 @@ import wikipedia
 from stanfordcorenlp import StanfordCoreNLP
 from googletrans import Translator
 import subprocess
-import json
 
 languagelist = ['en', 'zh', 'es', 'de' ] #'ru', 'ja'  hold off on these til we have integrated support for other models
+# nlp = StanfordCoreNLP('http://localhost', port=7000)
 
 
 def main():
@@ -54,6 +54,7 @@ def perform_ne(article):
 				sentences = article[lang]['content'].split(". ")
 			for sentence in sentences:
 				try:
+					# print(sentence)
 					entities = nlp.ner(sentence)
 					for entity in entities:
 						if entity[1] in desired_classes:
@@ -63,9 +64,10 @@ def perform_ne(article):
 								ne_freqs[entity] = 1
 				except Exception as e:
 					print("error on \"" + sentence + "\"")
-					print(e)
-
-		article[lang]['ner'] = sorted(ne_freqs.items(), reverse=True, key=lambda w: w[1])
+			# except json.decode.JSONDecodeError as e:
+			# 	print("error on \"" + sentence + "\"")
+			# 	print(e)
+			article[lang]['ner'] = sorted(ne_freqs.items(), reverse=True, key=lambda w: w[1])
 
 
 def sentiment(article):
@@ -102,13 +104,13 @@ def sentiment(article):
 				translated.append((selected[i][0], translations[i].text))
 
 			#analyze sentiment
-			with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang='en', memory='8g') as nlp:
+			with StanfordCoreNLP('/Users/xiangezhang/corenlp/stanford-corenlp-full-2018-10-05', lang='en', memory='8g') as nlp:
 				for sentence in translated:
 					results = nlp.sentiment(sentence[1])
 					print(sentence)
 					print(results['sentences'][0]['sentimentDistribution'])
 
-				
+
 
 		elif lang == 'en':
 			#repeat on each article for the english keys
@@ -123,7 +125,7 @@ def sentiment(article):
 			sentiment_agg = {}
 			print(len(english_text))
 			print(len(eng_selected))
-			with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
+			with StanfordCoreNLP('/Users/xiangezhang/corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
 				for sentence in eng_selected:
 					results = nlp.sentiment(sentence[1])
 					print(sentence)
@@ -156,7 +158,7 @@ def fetch_article(link):
 					"prop":"langlinks",
 					"format":"json",
 					"redirects":1,
-					'lllimit': 200,
+					'lllimit': 300,
 					"titles":title}
 	req = requests.get("https://en.wikipedia.org/w/api.php", params=param_dict)
 	results = req.json()
@@ -282,11 +284,11 @@ def translate(sentence):
 
 
 def stanford_corenlp(article):
-		if lang == 'en':
-			with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
-				#print(article[lang]['content'])
-				article[lang]['ner'] = nlp.ner(article[lang]['content'])
-				article[lang]['sa'] = nlp.sentiment
+	for lang in article:
+		with StanfordCoreNLP('corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
+			print(article[lang]['content'])
+			article[lang]['ner'] = nlp.ner(article[lang]['content'])
+
 
 if __name__ == '__main__':
 	main()

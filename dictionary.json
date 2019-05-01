@@ -1,74 +1,91 @@
-{"Nixon Doctrine":
+{
+"zh":
+  {
+    "Roosevelt":"羅斯福",
+    "US" : "美国",
+    "Japan": "日本",
+    "Authority": "管理局",
+    "Government": "政府",
+    "Eleanor": "埃莉諾",
+    "Court": "法院",
+    "Italy": "意大利",
+    "Smith": "史密斯",
+    "Hoover": "胡佛",
+    "Pacific Ocean": "太平洋",
+    "Stalin": "斯大林",
+    "Harry Hopkins": "哈里·霍普金斯",
+    "alliance" :"聯盟",
+    "Latin America": "拉丁美洲",
+    "Trump": "特朗普",
+    "US": "美国",
+    "China": "中国",
+    "Mexico": "墨西哥",
+    "Russia": "俄罗斯",
+    "Israel": "以色列",
+    "Democratic Party": "民主党",
+    "Republican Party": "共和黨",
+    "EU": "欧盟",
+    "Canada": "加拿大",
+    "White people": "白人",
+    "Jerusalem": "耶路撒冷",
+    "Xi Jinping": "习近平",
+    "NATO": "北约",
+    "North Atlantic": "北大西洋",
+    "UN": "联合国",
+    "Libya": "利比亚",
+    "Warsaw": "华沙",
+
+  },
+
+"es":
 	{
-	"es":
-		{
-			"Nixon" : "Nixon",
-			"Persian" : "Pérsico",
-			"Guam" : "Guam",
-			"Doctrine" : "Doctrina",
-			"Richard" : "Richard",
-			"United" : "States",
-			"States" : "Estados",
-			"Iran" : "Irán",
-			"Gulf" : "Golfo",
-		},
-	"de":
-		{
-			"Nixon":"Nixon",
-			"US" : "USA",
-			"United" : "Vereinigten",
-			"Iran" : "Iran",
-			"Gulf" : "Golfregion",
-		},
-  "zh":
-    {
-      "Roosevelt":"羅斯福",
-      "US" : "美国",
-      "Japan": "日本",
-      "Authority": "管理局",
-      "Government": "政府",
-      "Eleanor": "埃莉諾",
-      "Court": "法院",
-      "Italy": "意大利",
-      "Smith": "史密斯",
-      "Hoover": "胡佛",
-      "Pacific Ocean": "太平洋",
-      "Stalin": "斯大林",
-      "Harry Hopkins": "哈里·霍普金斯",
-      "alliance" :"聯盟",
-      "Latin America": "拉丁美洲",
-      "Trump": "特朗普",
-      "US": "美国",
-      "China": "中国",
-      "Mexico": "墨西哥",
-      "Russia": "俄罗斯",
-      "Israel": "以色列",
-      "Democratic Party": "民主党",
-      "Republican Party": "共和黨",
-      "EU": "欧盟",
-      "Canada": "加拿大",
-      "White people": "白人",
-      "Jerusalem": "耶路撒冷",
-      "Xi Jinping": "习近平",
-      "NATO": "北约",
-      "North Atlantic": "北大西洋",
-      "UN": "联合国",
-      "Libya": "利比亚",
-      "Warsaw": "华沙",
-
-
-
-
-    }
+		"Nixon" : "Nixon",
+		"Persian" : "Pérsico",
+		"Guam" : "Guam",
+		"Doctrine" : "Doctrina",
+		"Richard" : "Richard",
+		"United" : "States",
+		"States" : "Estados",
+		"Iran" : "Irán",
+		"Gulf" : "Golfo",
+		"Saudi" : "Saudí",
+	},
+"de":
+	{
+		"Nixon":"Nixon",
+		"US" : "USA",
+		"United" : "Vereinigten",
+		"Iran" : "Iran",
+		"Gulf" : "Golfregion",
+		"Egypt" : "Ägypten",
+		"Mubarak" : "Mubarak",
+		"Iran" : "Iran",
+		"Tunisia" : "Tunesien",
+		"Saudi Arabia" : "Saudi-Arabien",
+		"Syria" : "Syrien",
+		"Italy" : "Italien",
+		"Japan" : "Japan",
+		"Germany" : "Deutschland",
+		"Great Britain" : "Großbritannien",
+		"Mussolini" : "Mussolini",
+		"China" : "China",
+		"Croatia" : "Kroatien",
+		"Waffen-SS" : "Waffen-SS",
+		"Pétain" : "Pétain",
+		"North Africa" : "Nordafrika",
+		"Reich" : "Reich",
+		"Berlin" : "Berlin",
+		"Hideki" : "Hideki",
+		"Einsatzgruppen" : "Einsatzgruppen",
+		"Finland" : "Finnland",
+		"Soviet Union" : "Sowjetunion",
+		"Poland" : "Polen",
+		"Belgium" : "Belgien",
+		"Rhineland" : "Rheinlands",
+		"Weimar" : "Weimarer",
+		"Triple Entente" : "Triple Entent",
+		"Portugal" : "Portugal",
 	}
-
-
-
-
-
-
-
-
 
 
 }

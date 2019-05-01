@@ -56,8 +56,9 @@ def perform_ne(article):
 								ne_freqs[entity] += 1
 							except KeyError:
 								ne_freqs[entity] = 1
-				except json.decoder.JSONDecoderError:
+				except json.decoder.JSONDecodeError as e:
 					print("error on \"" + sentence + "\"")
+					print(e)
 
 		article[lang]['ner'] = sorted(ne_freqs.items(), reverse=True, key=lambda w: w[1])
 
@@ -67,6 +68,7 @@ def sentiment(article):
 		dictionary = json.loads(file.read())
 	english_text = article['en']['content'].split(". ")
 	for lang in article:
+		print(lang)
 		if lang != 'en':
 			sentences = article[lang]['content'].split(". ")
 			selected = []
@@ -77,7 +79,23 @@ def sentiment(article):
 						words.append(k)
 				if len(words) > 0:
 					selected.append((words, sentence))
-			
+
+			#translate by batch
+			translator = Translator()
+			strings = [w[1] for w in selected]
+			translations = translator.translate(strings, dest='en', src=lang)
+			translated = []
+			for i in range(len(strings)):
+				translated.append((selected[i][0], translations[i].text))
+
+			#analyze sentiment
+			with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang='en', memory='8g') as nlp:
+				for sentence in translated:
+					results = nlp.sentiment(sentence[1])
+					print(sentence)
+					print(results['sentences'][0]['sentimentDistribution'])
+
+				
 
 		elif lang == 'en':
 			#repeat on each article for the english keys

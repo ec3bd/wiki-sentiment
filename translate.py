@@ -5,6 +5,7 @@ import json
 import sys
 import wikipedia
 from stanfordcorenlp import StanfordCoreNLP
+from googletrans import Translator
 import subprocess
 import json
 
@@ -16,18 +17,21 @@ def main():
 	#if using a dataset of articles, 
 	if len(sys.argv) > 1:
 		for arg in sys.argv[1:]:
-			article = fetch_article(arg)
+			# article = fetch_article(arg)
 			
-			# stanford_corenlp(article)
+			# # stanford_corenlp(article)
 	
-			perform_ne(article)
-			for lang in article:
-				print(lang)
-				print(article[lang]['ner'])
-			# translated = translate(article)
-			# sentiments = stanford_corenlp(translated)
-			# print(arg)
-			# print(sentiments)
+			# perform_ne(article)
+			# # for lang in article:
+			# # 	print(lang)
+			# # 	print(article[lang]['ner'])
+			# sentiment(article)
+			# # translated = translate(article)
+			# # sentiments = stanford_corenlp(translated)
+			# # print(arg)
+			# # print(sentiments)
+
+			print(translate("Dies ist ein Test"))
 
 	else:
 		print("Please enter at least one Wikipedia link to analyse.")
@@ -43,6 +47,8 @@ def perform_ne(article):
 
 	for lang in article:
 		ne_freqs = {}
+		if lang != 'en':
+			continue
 		with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
 			sentences = article[lang]['content'].split(". ")
 			for sentence in sentences:
@@ -60,6 +66,41 @@ def perform_ne(article):
 		article[lang]['ner'] = sorted(ne_freqs.items(), reverse=True, key=lambda w: w[1])
 
 
+def sentiment(article):
+	with open('dictionary.json', 'r') as file:
+		dictionary = json.loads(file.read())
+	english_text = article['en']['content'].split(". ")
+	for lang in article:
+		if lang != 'en':
+			sentences = article[lang]['content'].split(". ")
+			selected = []
+			for sentence in sentences:
+				words = [] #build list of all dict words that appear in any sentence
+				for k, v in dictionary[lang].items():
+					if v in sentence:
+						words.append(k)
+				if len(words) > 0:
+					selected.append((words, sentence))
+			
+
+		elif lang == 'en':
+			#repeat on each article for the english keys
+			eng_selected = []
+			for sentence in english_text:
+				words = []
+				for k, v in dictionary['de'].items():
+					if k in sentence:
+						words.append(k)
+				if len(words) > 0:
+					eng_selected.append((words, sentence))
+			sentiment_agg = {}
+			print(len(english_text))
+			print(len(eng_selected))
+			with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
+				for sentence in eng_selected:
+					results = nlp.sentiment(sentence[1])
+					print(sentence)
+					print(results['sentences'][0]['sentimentDistribution'])
 
 
 #given a link to a wikipedia article, 
@@ -136,19 +177,14 @@ def fetch_article(link):
 
 #input: dictionary with {'en:english article text as string, 'zh': chinese article text} etc etc
 #output: dictionary with keys being various two-letter language codes and items being the translated article text
-def translate(article):
-	#get translated articles
-	for lang in article:
-		wikipedia.set_lang(lang)
-		page = wikipedia.page(languages[lang]['title'])
-		content = page.content
-		#print(content)
-		data = {"q":content,
+def translate(sentence):
+		data = {"q":sentence,
 				"target":"en",
-				"source":lang,
+				"source":'de',
 				"format":"text",
-				"key":"NO KEY HERE UNTIL WE GET A STORAGE MECHANISM GOING, or compress foriegn language to "}
-		#req = requests.post("https://translation.googleapis.com", data=data)
+				"key":"AIzaSyADeq50tLy0JgwXsMgxeOe7ai-FCfy6A_A"}
+		req = requests.post("https://translation.googleapis.com", data=data)
+		return req
 
 
 def stanford_corenlp(article):

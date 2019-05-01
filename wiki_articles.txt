@@ -1,14 +1,13 @@
-Title, URL
-e.g. 
 Franklin D. Roosevelt, https://en.wikipedia.org/wiki/Franklin_D._Roosevelt
 Donald Trump, https://en.wikipedia.org/wiki/Donald_Trump
-Russia and United States relations, https://en.wikipedia.org/wiki/Russia%E2%80%93United_States_relations
+#Russia and United States relations, https://en.wikipedia.org/wiki/Russia%E2%80%93United_States_relations
 Barack Obama, https://en.wikipedia.org/wiki/Barack_Obama
-World War II, https://en.wikipedia.org/wiki/World_War_II
+#World War II, https://en.wikipedia.org/wiki/World_War_II
 Allies of World War II, https://en.wikipedia.org/wiki/Allies_of_World_War_II
 Attack on Pearl Harbor, https://en.wikipedia.org/wiki/Attack_on_Pearl_Harbor
 Nazi Germany, https://en.wikipedia.org/wiki/Nazi_Germany
 Adolf Hitler, https://en.wikipedia.org/wiki/Adolf_Hitler
+Einsatzgruppen, https://en.wikipedia.org/wiki/Einsatzgruppen
 Axis powers, https://en.wikipedia.org/wiki/Axis_powers
 Treaty of Versailles, https://en.wikipedia.org/wiki/Treaty_of_Versailles
 Same-sex marriage, https://en.wikipedia.org/wiki/Same-sex_marriage
@@ -30,17 +29,17 @@ Mikhail Khodorkovsky, https://en.wikipedia.org/wiki/Mikhail_Khodorkovsky
 Communism, https://en.wikipedia.org/wiki/Communism
 Nixon Doctrine, https://en.wikipedia.org/wiki/Nixon_Doctrine
 
-Russian military intervention in Ukraine (2014–present), https://en.wikipedia.org/wiki/Russian_military_intervention_in_Ukraine_(2014%E2%80%93present)
+#Russian military intervention in Ukraine (2014–present), https://en.wikipedia.org/wiki/Russian_military_intervention_in_Ukraine_(2014%E2%80%93present)
 Annexation of Crimea by the Russian Federation, https://en.wikipedia.org/wiki/Annexation_of_Crimea_by_the_Russian_Federation
 
 
-Tiananmen Square Protests https://en.wikipedia.org/wiki/1989_Tiananmen_Square_protests
-Cold War https://en.wikipedia.org/wiki/Cold_War
-Second Sino-Japanese War https://en.wikipedia.org/wiki/Second_Sino-Japanese_War
-Vietnam War https://en.wikipedia.org/wiki/Vietnam_War
-Nanjing Massacre https://en.wikipedia.org/wiki/Nanjing_Massacre
-Civil Rights Movement https://en.wikipedia.org/wiki/Civil_rights_movement
-Feminisim https://en.wikipedia.org/wiki/Feminism
+Tiananmen Square Protests, https://en.wikipedia.org/wiki/1989_Tiananmen_Square_protests
+Cold War, https://en.wikipedia.org/wiki/Cold_War
+Second Sino-Japanese War, https://en.wikipedia.org/wiki/Second_Sino-Japanese_War
+Vietnam War, https://en.wikipedia.org/wiki/Vietnam_War
+Nanjing Massacre, https://en.wikipedia.org/wiki/Nanjing_Massacre
+Civil Rights Movement, https://en.wikipedia.org/wiki/Civil_rights_movement
+Feminisim, https://en.wikipedia.org/wiki/Feminism
 
 
 

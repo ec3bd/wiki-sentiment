@@ -23,15 +23,17 @@ def main():
 			# stanford_corenlp(article)
 
 			perform_ne(article)
-			# for lang in article:
-			# 	print(lang)
-			print(article['zh']['ner'])
+			for lang in article:
+				print(lang)
+				print(article[lang]['ner'])
+			#sentiment(article)
 			# translated = translate(article)
 			# sentiments = stanford_corenlp(translated)
 			# print(arg)
 			# print(sentiments)
 
 	else:
+		build_dictionary()
 		print("Please enter at least one Wikipedia link to analyse.")
 
 def show_named_entities():
@@ -46,7 +48,10 @@ def perform_ne(article):
 	for lang in article:
 		ne_freqs = {}
 		with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
-			sentences = article[lang]['content'].split(". ")
+			if lang == 'zh':
+				sentences = article[lang]['content'].split("。")
+			else:
+				sentences = article[lang]['content'].split(". ")
 			for sentence in sentences:
 				try:
 					entities = nlp.ner(sentence)
@@ -56,7 +61,7 @@ def perform_ne(article):
 								ne_freqs[entity] += 1
 							except KeyError:
 								ne_freqs[entity] = 1
-				except json.decoder.JSONDecodeError as e:
+				except Exception as e:
 					print("error on \"" + sentence + "\"")
 					print(e)
 
@@ -70,7 +75,11 @@ def sentiment(article):
 	for lang in article:
 		print(lang)
 		if lang != 'en':
-			sentences = article[lang]['content'].split(". ")
+			if lang == 'zh':
+				sentences = article[lang]['content'].split("。")
+			else:
+				continue
+				sentences = article[lang]['content'].split(". ")
 			selected = []
 			for sentence in sentences:
 				words = [] #build list of all dict words that appear in any sentence
@@ -83,7 +92,11 @@ def sentiment(article):
 			#translate by batch
 			translator = Translator()
 			strings = [w[1] for w in selected]
-			translations = translator.translate(strings, dest='en', src=lang)
+			if lang == 'zh':
+				langcode = 'zh-CN'
+			else:
+				langcode = lang
+			translations = translator.translate(strings, dest='en', src=langcode)
 			translated = []
 			for i in range(len(strings)):
 				translated.append((selected[i][0], translations[i].text))
@@ -189,6 +202,72 @@ def fetch_article(link):
 
 	return retdict
 
+
+def build_dictionary():
+	ne_dict = {}
+	for lang in languagelist:
+		ne_dict[lang] = {}
+	with open('wiki_articles.txt', 'r') as file:
+		for line in file:
+			if line == "\n" or line[0]=='#':
+				continue
+			line = line.split(", ")
+			article = fetch_article(line[1].strip())
+			perform_ne(article)
+
+			for lang in article:
+				for ne in article[lang]['ner']:
+					if ne[0][0] in ne_dict[lang]:
+						ne_dict[lang][ne[0][0]] += ne[1]
+					else:
+						ne_dict[lang][ne[0][0]] = ne[1]
+	with open('all_entities.json', 'w') as file:
+		file.write(json.dumps(ne_dict))
+
+	# then load and use same file to try and find intersection of terms
+	with open('all_entities.json', 'r') as file:
+		ne_dict = json.loads(file.read())
+
+	translator = Translator()
+	translated = {}
+	for lang in languagelist:
+		translated[lang] = {}
+	for lang in ne_dict:
+		if lang == 'en':
+			for k, v in ne_dict[lang].items():
+				if k in translated[lang]:
+					pass
+				else:
+					translated[lang][k] = k
+		else:
+			if lang == 'zh':
+				langcode = 'zh-CN'
+			else:
+				langcode = lang
+			
+			for k, v in ne_dict[lang].items():
+				if v > 5
+					translation = translator.translate(k, dest='en', src=langcode).text
+					if translation in translated[lang]:
+						pass
+					else:
+						translated[lang][translation] = k
+	common_entities = {}
+	for lang in translated:
+		for k, v in translated[lang]:
+			if k in common_entities:
+				common_entities[k][lang] = v
+			else:
+				common_entities[k] = {}
+				common_entities[k][lang] = v
+	sorted_common_entities = sorted(common_entities.items(), key = lambda w: len(w[1]), reverse=True)
+	print(sorted_common_entities)
+	with open('common_entities.json', 'w') as file:
+		file.write(json.dumps(sorted_common_entities))
+
+
+
+
 #input: dictionary with {'en:english article text as string, 'zh': chinese article text} etc etc
 #output: dictionary with keys being various two-letter language codes and items being the translated article text
 def translate(sentence):
@@ -196,9 +275,10 @@ def translate(sentence):
 				"target":"en",
 				"source":'de',
 				"format":"text",
-				"key":"AIzaSyADeq50tLy0JgwXsMgxeOe7ai-FCfy6A_A"}
+				"key":""}
 		req = requests.post("https://translation.googleapis.com", data=data)
 		return req
+
 
 
 def stanford_corenlp(article):

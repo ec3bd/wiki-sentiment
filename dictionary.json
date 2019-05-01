@@ -1,35 +1,54 @@
-{"Nixon Doctrine":
+
+{
+"es":
 	{
-	"es":
-		{
-			"Nixon" : "Nixon",
-			"Persian" : "Pérsico",
-			"Guam" : "Guam",
-			"Doctrine" : "Doctrina",
-			"Richard" : "Richard",
-			"United" : "States",
-			"States" : "Estados",
-			"Iran" : "Irán",
-			"Gulf" : "Golfo",
-		},
-	"de":
-		{
-			"Nixon":"Nixon",
-			"US" : "USA",
-			"United" : "Vereinigten",
-			"Iran" : "Iran",
-			"Gulf" : "Golfregion",
-		}
-
+		"Nixon" : "Nixon",
+		"Persian" : "Pérsico",
+		"Guam" : "Guam",
+		"Doctrine" : "Doctrina",
+		"Richard" : "Richard",
+		"United" : "States",
+		"States" : "Estados",
+		"Iran" : "Irán",
+		"Gulf" : "Golfo",
+		"Saudi" : "Saudí",
+	},
+"de":
+	{
+		"Nixon":"Nixon",
+		"US" : "USA",
+		"United" : "Vereinigten",
+		"Iran" : "Iran",
+		"Gulf" : "Golfregion",
+		"Egypt" : "Ägypten",
+		"Mubarak" : "Mubarak",
+		"Iran" : "Iran",
+		"Tunisia" : "Tunesien",
+		"Saudi Arabia" : "Saudi-Arabien",
+		"Syria" : "Syrien",
+		"Italy" : "Italien",
+		"Japan" : "Japan",
+		"Germany" : "Deutschland",
+		"Great Britain" : "Großbritannien",
+		"Mussolini" : "Mussolini",
+		"China" : "China",
+		"Croatia" : "Kroatien",
+		"Waffen-SS" : "Waffen-SS",
+		"Pétain" : "Pétain",
+		"North Africa" : "Nordafrika",
+		"Reich" : "Reich",
+		"Berlin" : "Berlin",
+		"Hideki" : "Hideki",
+		"Einsatzgruppen" : "Einsatzgruppen",
+		"Finland" : "Finnland",
+		"Soviet Union" : "Sowjetunion",
+		"Poland" : "Polen",
+		"Belgium" : "Belgien",
+		"Rhineland" : "Rheinlands",
+		"Weimar" : "Weimarer",
+		"Triple Entente" : "Triple Entent",
+		"Portugal" : "Portugal",
 	}
-
-
-
-
-
-
-
-
 
 
 }

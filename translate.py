@@ -88,7 +88,7 @@ def fetch_article(link):
 					"prop":"langlinks",
 					"format":"json",
 					"redirects":1,
-					'lllimit': 30,
+					'lllimit': 100,
 					"titles":title}
 	req = requests.get("https://en.wikipedia.org/w/api.php", params=param_dict)
 	results = req.json()
@@ -153,10 +153,11 @@ def translate(article):
 
 def stanford_corenlp(article):
 	for lang in article:
-		with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
-			print(article[lang]['content'])
-			article[lang]['ner'] = nlp.ner(article[lang]['content'])
-
+		if lang == 'en':
+			with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
+				#print(article[lang]['content'])
+				article[lang]['ner'] = nlp.ner(article[lang]['content'])
+				article[lang]['sa'] = nlp.sentiment
 	
 if __name__ == '__main__':
 	main()

@@ -5,6 +5,7 @@ import json
 import sys
 import wikipedia
 from stanfordcorenlp import StanfordCoreNLP
+from polyglot.text import Text, Word
 from googletrans import Translator
 import subprocess
 
@@ -49,9 +50,10 @@ def perform_ne(article):
 		ne_freqs = {}
 		with StanfordCoreNLP('./corenlp/stanford-corenlp-full-2018-10-05', lang=lang, memory='8g') as nlp:
 			if lang == 'zh':
-				sentences = article[lang]['content'].split("。")
+				text = Text(article[lang]['content'], hint_language_code='zh')
+				sentences = [sentence.string for sentence in text.sentences]
 			else:
-				sentences = article[lang]['content'].split(". ")
+				sentences = article[lang]['content'].split(". ")	
 			for sentence in sentences:
 				try:
 					# print(sentence)
@@ -78,7 +80,9 @@ def sentiment(article):
 		print(lang)
 		if lang != 'en':
 			if lang == 'zh':
-				sentences = article[lang]['content'].split("。")
+				text = Text(article[lang]['content'], hint_language_code='zh')
+				sentences = [sentence.string for sentence in text.sentences]
+				#sentences = article[lang]['content'].split("。")
 			else:
 				continue
 				sentences = article[lang]['content'].split(". ")
@@ -132,12 +136,29 @@ def sentiment(article):
 					print(results['sentences'][0]['sentimentDistribution'])
 
 
+def sentiment2():
+	dictfiles = {'de':'deDict.json', 'ru':'ruDict.json','ja':'jaDict.json','es':'esDict.json','zh':'zhDict.json','en':'enDict.json'}
+	sentence_dict = {}
+	for lang in dictfiles:
+		with open(dictfiles[lang], 'r') as file:
+			sentence_dict[lang] = json.loads(file.read())
+
+	with open('mergeDict.json', 'r') as file:
+		mergeDict = json.loads(file.read())
+
+	subset = {k:v for k,v in mergeDict.items() if len(v) == 6}
+	print(len(subset))
+	subset = {k:v for k,v in mergeDict.items() if len(v) >= 5}
+	
+	print(len(subset))
+
 #given a link to a wikipedia article,
 #will return the text content of that article in a dictionary keyed by its page title
 def fetch_article(link):
 	ind = link.index("/wiki/")
 	title = link[ind+6:]
 	print(title)
+	wikipedia.set_lang('en')
 	page = wikipedia.page(title)
 	content = page.content
 	#Divide at earliest point to cut down on unnecessary characters
@@ -209,22 +230,22 @@ def build_dictionary():
 	ne_dict = {}
 	for lang in languagelist:
 		ne_dict[lang] = {}
-	with open('wiki_articles.txt', 'r') as file:
-		for line in file:
-			if line == "\n" or line[0]=='#':
-				continue
-			line = line.split(", ")
-			article = fetch_article(line[1].strip())
-			perform_ne(article)
+	# with open('wiki_articles.txt', 'r') as file:
+	# 	for line in file:
+	# 		if line.strip() == "" or line[0]=='#':
+	# 			continue
+	# 		line = line.split(", ")
+	# 		article = fetch_article(line[1].strip())
+	# 		perform_ne(article)
 
-			for lang in article:
-				for ne in article[lang]['ner']:
-					if ne[0][0] in ne_dict[lang]:
-						ne_dict[lang][ne[0][0]] += ne[1]
-					else:
-						ne_dict[lang][ne[0][0]] = ne[1]
-	with open('all_entities.json', 'w') as file:
-		file.write(json.dumps(ne_dict))
+	# 		for lang in article:
+	# 			for ne in article[lang]['ner']:
+	# 				if ne[0][0] in ne_dict[lang]:
+	# 					ne_dict[lang][ne[0][0]] += ne[1]
+	# 				else:
+	# 					ne_dict[lang][ne[0][0]] = ne[1]
+	# 		with open('all_entities.json', 'w') as file:
+	# 			file.write(json.dumps(ne_dict))
 
 	# then load and use same file to try and find intersection of terms
 	with open('all_entities.json', 'r') as file:
@@ -248,15 +269,18 @@ def build_dictionary():
 				langcode = lang
 			
 			for k, v in ne_dict[lang].items():
-				if v > 5
-					translation = translator.translate(k, dest='en', src=langcode).text
+				if v > 5:
+					try:
+						translation = translator.translate(k, dest='en', src=langcode).text
+					except Exception:
+
 					if translation in translated[lang]:
 						pass
 					else:
 						translated[lang][translation] = k
 	common_entities = {}
 	for lang in translated:
-		for k, v in translated[lang]:
+		for k, v in translated[lang].items():
 			if k in common_entities:
 				common_entities[k][lang] = v
 			else:
@@ -289,6 +313,12 @@ def stanford_corenlp(article):
 			print(article[lang]['content'])
 			article[lang]['ner'] = nlp.ner(article[lang]['content'])
 
+#takes in a classification vector of dim 5 and returns a double that attempts to collate those 5 confidences into a score denoting overall positive or negative sentiment
+def collate_sentiment_score(scores):
+	return -2*scores[0] - scores[1] + scores[3] + 2*scores[4]
+
+def calculate_controversy(dictionary ):
+	pass
 
 if __name__ == '__main__':
 	main()

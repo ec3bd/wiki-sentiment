@@ -29,9 +29,26 @@ ja = ja.reset_index(drop=True)
 ru = df['ru']
 ru = ru.drop(labels = [10])
 ru = ru.reset_index(drop=True)
+# get EN series
+en = df['en']
+
+# get DE series
+de = df['de']
+de = de.drop(labels = [5, 11])
+de = de.reset_index(drop=True)
+
+# get es series
+es = df['es']
+
+# get zh series
+zh = df['zh']
+zh = zh.drop(labels = [11])
+zh = zh.reset_index(drop=True)
 
 
-with open('/Users/mikesung/Downloads/wiki-sentiment/dictionary.json', 'r') as f:
+a = json.load()
+
+with open('/Users/mikesung/Downloads/wiki-sentiment/japanRussiaFreq.json', 'r') as f:
     nerDict = json.load(f)
 
 engSet = []
@@ -56,8 +73,8 @@ for i in range(len(argSort)):
 jsonDict = {}
 jsonDict['ru'] = topDict
 
-with open('/Users/mikesung/Downloads/japanRussiaFreq.json', 'w') as fp:
-    json.dump(jsonDict, fp)
+with open('/Users/mikesung/Downloads/mergeDict.json', 'w') as fp:
+    json.dump(mergeDict, fp)
 
 
 
@@ -93,7 +110,7 @@ def getSentimentScores(laNerDict, laDict):
             for sentence in laDict[laNer]:
 #                print(sentence)
                 try:
-                    trans = translate_client.translate(text,target_language='en')['translatedText']
+                    trans = translate_client.translate(sentence,target_language='en')['translatedText']
                     results = nlp.sentiment(trans)
                     sentiVec = np.array(results['sentences'][0]['sentimentDistribution'])
                     scoreList.append(sentiVec)
@@ -132,5 +149,57 @@ def getNamedEntities(series, countryCode='en', threshold=5):
     
     return retDict
 
+def getNamedEntitiesStanford(series, countryCode='en', threshold=5):
+    nlp = StanfordCoreNLP('/Users/mikesung/Downloads/wiki-sentiment/corenlp/stanford-corenlp-full-2018-10-05', lang=countryCode, memory='8g', port=9000)
+    desired_classes = ['PERSON', 'LOCATION', 'ORGANIZATION', 'CITY', 'STATE_OR_PROVINCE', 'COUNTRY', 'NATIONALITY', 'RELIGION', 'IDEOLOGY']
+    retDict = {}
+    for i in range(len(series)):
+        print("Working on article " + str(i))
+        text = Text(series[i], hint_language_code=countryCode)
+        for sentence in text.sentences:
+            try:
+                NERList = nlp.ner(sentence.string)
+                for tup in NERList:
+                    word = tup[0]
+                    if tup[1] in desired_classes:
+                        if word not in retDict:
+                            retDict[word] = []
+                            retDict[word].append(sentence.string)
+                        else:
+                            retDict[word].append(sentence.string)
+            except:
+                print("Article " + str(i) + "failed to load.")
+                pass
+    
+    toBeDel = []
+    for key, valueList in retDict.items():
+        if len(valueList) < threshold:
+            toBeDel.append(key)
+    
+    for key in toBeDel:
+        del retDict[key]
+    
+    return retDict
+
+def mergeLaDict(enDict, listOfOther, codeList = ['de', 'es', 'ja', 'ru', 'zh']):
+    translate_client = translate.Client()
+    retDict = {}
+    for enKey in enDict.keys():
+        retDict[enKey] = {}
+        retDict[enKey]['en'] = enKey
+    for i in range(len(listOfOther)):
+        dic = listOfOther[i]
+        countryCode = codeList[i]
+        print("Working on " + countryCode)
+        
+        for laKey in dic.keys():
+            transKey = translate_client.translate(laKey, target_language='en')['translatedText']
+            if transKey in retDict:
+                retDict[transKey][countryCode] = laKey
+            else:
+                retDict[transKey] = {}
+                retDict[transKey][countryCode] = laKey
+    return retDict
+    
 
 

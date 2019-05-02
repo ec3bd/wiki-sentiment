@@ -48,8 +48,8 @@ zh = zh.reset_index(drop=True)
 
 a = json.load()
 
-with open('/Users/mikesung/Downloads/wiki-sentiment/japanRussiaFreq.json', 'r') as f:
-    nerDict = json.load(f)
+with open('/Users/mikesung/Downloads/wiki-sentiment/mergeDict_filtered.json', 'r') as f:
+    mergeDictFilter = json.load(f)
 
 engSet = []
 for key, subDict in nerDict.items():
@@ -73,8 +73,8 @@ for i in range(len(argSort)):
 jsonDict = {}
 jsonDict['ru'] = topDict
 
-with open('/Users/mikesung/Downloads/mergeDict.json', 'w') as fp:
-    json.dump(mergeDict, fp)
+with open('/Users/mikesung/Downloads/enSent.json', 'w') as fp:
+    json.dump(enSent, fp)
 
 
 
@@ -93,35 +93,59 @@ def getNERMappings(top150Key):
 
 
 
-
-
-def getSentimentScores(laNerDict, laDict):
-    nlp = StanfordCoreNLP('/Users/mikesung/Downloads/wiki-sentiment/corenlp/stanford-corenlp-full-2018-10-05', lang='en', memory='8g', port=9000)
-    
+# get sentiment scores for one country
+def getSentimentScores(mergeDict, laDict, countryCode):
+    nlp = StanfordCoreNLP('/Users/mikesung/Downloads/wiki-sentiment/corenlp/stanford-corenlp-full-2018-10-05', lang='en', memory='8g', port=9000)    
     translate_client = translate.Client()
 
-    numDict = {}
     scoreDict = {}
-    for enNer, laNer in laNerDict.items():
-        print("Working on " + enNer + " " + laNer)
-        if laNer in laDict:
-            numDict[enNer] = len(laDict[laNer])
+    
+    # sentence -> translate -> vector
+    sentence_hashes = {}
+    length = str(len(mergeDict))
+    counter = 1
+    
+    for enNer in mergeDict.keys():
+#        if counter >= 1:
+#            return scoreDict
+        print("Working on " + enNer + " " + str(counter) + "/" + length)
+        
+        if countryCode in mergeDict[enNer]:
+            laNer = mergeDict[enNer][countryCode]
             scoreList = []
             for sentence in laDict[laNer]:
-#                print(sentence)
-                try:
-                    trans = translate_client.translate(sentence,target_language='en')['translatedText']
-                    results = nlp.sentiment(trans)
-                    sentiVec = np.array(results['sentences'][0]['sentimentDistribution'])
+                
+                if  sentence in sentence_hashes:
+                    sentiVec = sentence_hashes[sentence]
                     scoreList.append(sentiVec)
-                except:
-                    pass
+                else:
+                    if countryCode == 'en':
+                        try:
+                            trans = sentence
+                            results = nlp.sentiment(trans)
+                            sentiVec = results['sentences'][0]['sentimentDistribution']
+                            scoreList.append(sentiVec)
+                            sentence_hashes[sentence] = sentiVec
+                        except:
+                            print("Failed on one sentence for " + enNer + " " + laNer)
+                            pass
+                    else:
+                        try:
+                            trans = translate_client.translate(sentence,target_language='en')['translatedText']
+                            results = nlp.sentiment(trans)
+                            sentiVec = results['sentences'][0]['sentimentDistribution']
+                            scoreList.append(sentiVec)
+                            sentence_hashes[sentence] = sentiVec
+                        except:
+                            print("Failed on one sentence for " + enNer + " " + laNer)
+                            pass
             scoreDict[enNer] = scoreList
                 
         else:
-            numDict[enNer] = 0
             scoreDict[enNer] = []
-    return numDict, scoreDict
+        counter += 1
+#    nlp.close()
+    return scoreDict
     
 
 def getNamedEntities(series, countryCode='en', threshold=5):
@@ -179,6 +203,7 @@ def getNamedEntitiesStanford(series, countryCode='en', threshold=5):
     for key in toBeDel:
         del retDict[key]
     
+    nlp.close()
     return retDict
 
 def mergeLaDict(enDict, listOfOther, codeList = ['de', 'es', 'ja', 'ru', 'zh']):

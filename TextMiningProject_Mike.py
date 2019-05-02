@@ -73,8 +73,8 @@ for i in range(len(argSort)):
 jsonDict = {}
 jsonDict['ru'] = topDict
 
-with open('/Users/mikesung/Downloads/enSent.json', 'w') as fp:
-    json.dump(enSent, fp)
+with open('/Users/mikesung/Downloads/jaSent.json', 'w') as fp:
+    json.dump(jaSent, fp)
 
 
 
